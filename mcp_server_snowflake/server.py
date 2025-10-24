@@ -284,6 +284,12 @@ class SnowflakeService:
                 logger.info("Using external authentication")
                 connection_params = self.connection_params.copy()
 
+                # When using OAuth token authentication, remove password if present
+                if (connection_params.get("token") and
+                    connection_params.get("authenticator") == "oauth"):
+                    logger.info("Using OAuth token authentication - removing password requirement")
+                    connection_params.pop("password", None)
+
             # We are passing session_parameters and client_session_keep_alive
             # so we cannot rely on the connection to infer default connection name.
             # So instead, if no explicit values passed via CLI, we replicate the same logic here
@@ -357,6 +363,12 @@ class SnowflakeService:
                 else:
                     logger.info("Using external authentication")
                     connection_params = self.connection_params.copy()
+
+                    # When using OAuth token authentication, remove password if present
+                    if (connection_params.get("token") and
+                        connection_params.get("authenticator") == "oauth"):
+                        logger.info("Using OAuth token authentication - removing password requirement")
+                        connection_params.pop("password", None)
 
                 self.connection = connect(
                     **connection_params,
