@@ -617,7 +617,7 @@ def get_login_params() -> dict:
         ],
         "authenticator": [
             "--authenticator",
-            None,  # Default is 'snowflake'. Don't want to pass this as only explicit argument later on.
+            os.getenv("SNOWFLAKE_AUTHENTICATOR"),  # Support environment variable for authenticator
             """Authenticator for Snowflake:
 
 snowflake (default) to use the internal Snowflake authenticator.
