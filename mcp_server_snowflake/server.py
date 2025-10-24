@@ -284,11 +284,15 @@ class SnowflakeService:
                 logger.info("Using external authentication")
                 connection_params = self.connection_params.copy()
 
-                # When using OAuth token authentication, remove password if present
+                # When using OAuth token authentication, remove password and other auth params
                 if (connection_params.get("token") and
                     connection_params.get("authenticator") == "oauth"):
-                    logger.info("Using OAuth token authentication - removing password requirement")
+                    logger.info("Using OAuth token authentication - removing incompatible auth parameters")
+                    # Remove parameters that conflict with OAuth token authentication
                     connection_params.pop("password", None)
+                    connection_params.pop("private_key", None)
+                    connection_params.pop("private_key_file", None)
+                    connection_params.pop("private_key_file_pwd", None)
 
             # We are passing session_parameters and client_session_keep_alive
             # so we cannot rely on the connection to infer default connection name.
@@ -364,11 +368,15 @@ class SnowflakeService:
                     logger.info("Using external authentication")
                     connection_params = self.connection_params.copy()
 
-                    # When using OAuth token authentication, remove password if present
+                    # When using OAuth token authentication, remove password and other auth params
                     if (connection_params.get("token") and
                         connection_params.get("authenticator") == "oauth"):
-                        logger.info("Using OAuth token authentication - removing password requirement")
+                        logger.info("Using OAuth token authentication - removing incompatible auth parameters")
+                        # Remove parameters that conflict with OAuth token authentication
                         connection_params.pop("password", None)
+                        connection_params.pop("private_key", None)
+                        connection_params.pop("private_key_file", None)
+                        connection_params.pop("private_key_file_pwd", None)
 
                 self.connection = connect(
                     **connection_params,
@@ -516,7 +524,7 @@ def create_lifespan(args):
         connection_params = {
             key: getattr(args, key)
             for key in get_login_params().keys()
-            if getattr(args, key) is not None
+            if getattr(args, key) is not None and getattr(args, key) != ""
         }
         service_config_file = get_var(
             "service_config_file", "SERVICE_CONFIG_FILE", args
