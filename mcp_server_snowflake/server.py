@@ -284,26 +284,18 @@ class SnowflakeService:
                 logger.info("Using external authentication")
                 connection_params = self.connection_params.copy()
 
-                # Debug: Log parameters before OAuth cleanup
-                logger.info(f"Connection params before OAuth cleanup: {list(connection_params.keys())}")
-
                 # Remove empty string values from connection params
                 connection_params = {k: v for k, v in connection_params.items() if v not in (None, "")}
-                logger.info(f"Connection params after removing empty values: {list(connection_params.keys())}")
 
                 # When using OAuth token authentication, remove password and other auth params
                 if (connection_params.get("token") and
                     connection_params.get("authenticator") == "oauth"):
-                    logger.info("Using OAuth token authentication - removing incompatible auth parameters")
+                    logger.info("Using OAuth token authentication")
                     # Remove parameters that conflict with OAuth token authentication
                     connection_params.pop("password", None)
                     connection_params.pop("private_key", None)
                     connection_params.pop("private_key_file", None)
                     connection_params.pop("private_key_file_pwd", None)
-                    logger.info(f"Connection params after OAuth cleanup: {list(connection_params.keys())}")
-
-            # Debug: Log final parameters being passed to connect()
-            logger.info(f"Final connection params: {list(connection_params.keys())}")
 
             # We are passing session_parameters and client_session_keep_alive
             # so we cannot rely on the connection to infer default connection name.
@@ -540,12 +532,6 @@ def create_lifespan(args):
             for key in get_login_params().keys()
             if getattr(args, key) is not None and getattr(args, key) != ""
         }
-
-        # Debug: Log what parameters we're passing
-        logger.info(f"Connection params collected: {list(connection_params.keys())}")
-        if "password" in connection_params:
-            logger.warning(f"Password parameter present with value: {'<set>' if connection_params['password'] else '<empty>'}")
-
         service_config_file = get_var(
             "service_config_file", "SERVICE_CONFIG_FILE", args
         )
