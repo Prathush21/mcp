@@ -641,5 +641,11 @@ If the value is not snowflake, the user and password parameters must be your log
             None,
             "Name of the connection in Snowflake configuration file to use.",
         ],
+        "token": [
+            "--token",
+            "--oauth-token",
+            os.getenv("SNOWFLAKE_TOKEN") or os.getenv("SNOWFLAKE_OAUTH_TOKEN"),
+            "OAuth token for authentication. Use with --authenticator oauth.",
+        ],
     }
     return login_params
